@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Edit profile {% endblock %}
+
+{% block content %}
+<section class="w-100 p-4 d-flex justify-content-center pb-4 h6">
+    <form method="post" style="width: 32rem;" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!-- SUCCESS MESSAGE HERE -->
+        {% if user_form.is_valid %}
+        <div class="alert alert-primary" role="alert">
+            {{ request.user.name }}, your profile successfully updated!
+        </div>
+        <p class="small text-center pt-0">
+            <a href="{% url 'account:dashboard' %}" class="h6">Back to Dashboard</a>
+        </p>
+        {% else %}
+        <h2 class="h1 mb-3 text-center pb-3">Change your details</h2>
+        {% endif %}
+
+        <!-- ERRORS HERE -->
+        {% if user_form.errors %}
+        <div class="alert alert-primary" role="alert">
+            Error. Try again!
+        </div>
+        {% endif %}
+
+        <!-- Email input -->
+        <div class="form-outline mb-3">
+            <label class="form-label" for="login-username" style="margin-left: 0px;">{{ user_form.email.label }}</label>
+            {{ user_form.email }}
+            <div class="form-notch"><div class="form-notch-leading" style="width: 9px;"></div><div class="form-notch-middle" style="width: 88.8px;"></div><div class="form-notch-trailing"></div></div>
+        </div>
+
+        <!-- Password input -->
+        <div class="form-outline mb-3">
+            <label class="form-label" for="login-password" style="margin-left: 0px;">{{ user_form.name.label }}</label>
+            {{ user_form.name }}
+            <div class="form-notch"><div class="form-notch-leading" style="width: 9px;"></div><div class="form-notch-middle" style="width: 64px;"></div><div class="form-notch-trailing"></div></div>
+        </div>
+
+        <!-- Submit button -->
+        <button type="submit" class="btn btn-primary btn-block mb-5 p-2 w-100">Submit</button>
+    </form>
+    
+    <form class="account-form px-4" action="{% url 'account:account_delete' %}" method="post">
+        {% csrf_token %}
+        <p class=" h3 pt-4 font-weight-bold">Delete Account</p>
+        <p>Are you sure you want to delete your account?</p>
+        <button type="submit" role="button"
+            class="btn btn-danger btn-block py-2 mb-4 mt-1 fw-bold w-100">Delete</button>
+    </form>
+</section>
+{% endblock content %}

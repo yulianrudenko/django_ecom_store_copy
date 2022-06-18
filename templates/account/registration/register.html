@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Register {% endblock %}
+
+{% block content %}
+
+<style>
+    .account-form input {
+        border: 2px solid #ccc;
+        height: calc(2em + .75rem + 2px);
+    }
+
+    .account-form input:focus {
+        border-color: #1497ff;
+        box-shadow: none;
+    }
+</style>
+
+<div class="container-fluid col-md-8">
+    <div class="">
+        <h3 class="my-2 font-weight-bold">Create an account</h3>
+        <p class="mb-3 h6">It's free and only takes a minute.</p>
+    </div>
+
+    <div class="form-group row">
+        <form action="." method="post" class="h6">
+            {% csrf_token %}
+
+            <div class="form-group mb-3">
+                {% if register_form.errors %}
+                <p>Please correct the following errors:</p>
+                    {% for field in register_form %}
+                        {% if field.errors %}
+                        <div class="alert alert-primary" role="alert">
+                            {{ field.label }}: {{ field.errors|striptags }}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-group my-3">
+                <label class="my-2">{{ register_form.user_name.label }}<span class="text-muted small"> (Required)</span></label>
+                {{ register_form.user_name }}
+                
+            </div>
+
+            <div class="form-group my-3">
+                <label class="my-2">{{ register_form.email.label}}<span class="text-muted small"> (Required)</span></label>
+                {{ register_form.email }}
+            </div>
+
+            <div class="form-group my-3">
+                <label class="my-2">{{ register_form.password.label}}<span class="text-muted mb-4"></span>
+                    <small class="form-text text-muted mb-4 small">
+                        (At least 8 characters and 1 digit)
+                    </small>
+                </label>
+                {{ register_form.password }}
+            </div>
+
+            <div class="form-group mt-3">
+                <label class="my-2">
+                    {{ register_form.password2.label }}
+                    <span class="text-muted small"> (Required)</span>
+                </label>
+                {{ register_form.password2 }}
+            </div>
+
+            <button class="btn btn-primary btn-block py-2 mb-4 mt-5 fw500 w-100" type="submit">Register</button>
+            <p class="text-center">
+                <a href="">Already have an account?</a>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}

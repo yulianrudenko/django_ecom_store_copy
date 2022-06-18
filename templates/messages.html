@@ -1,0 +1,7 @@
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}" role="alert">
+        {{message|safe}}{% comment %}- <a href="{% url 'account:wishlist' %}" class="alert-link">Your Wishlist</a>{% endcomment %}
+      </div>
+  {% endfor %}
+{% endif %}

@@ -1,0 +1,8 @@
+#Pytest
+pytest a_directory                     # directory
+pytest test_something.py               # tests file
+pytest test_something.py::single_test  # single test function
+pytest tests/account/test_account.py::test_function_fixture1  -m "views" -rP
+pytest -rP
+pytest -m "views" -rP
+coverage run -m pytest
