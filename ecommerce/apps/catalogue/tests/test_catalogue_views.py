@@ -3,8 +3,8 @@ from django.urls import reverse
 from ecommerce.apps.catalogue import views
 
 
-@pytest.mark.django.db
+@pytest.mark.django_db
 def test_root_url(client):
     url = reverse("catalogue:store_home")
     response = client.get(url)
-    assert response.status_code == 300
+    assert response.status_code == 200

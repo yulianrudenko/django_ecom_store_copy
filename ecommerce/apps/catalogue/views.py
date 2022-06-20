@@ -17,5 +17,4 @@ def product_detail(request, slug):
 def category_list(request, slug):
     category = get_object_or_404(models.Category, slug=slug)
     products = models.Product.objects.filter(category__in=category.get_descendants(include_self=True))
-    print(models.Category.objects.get(name="Shoes").get_descendants())
     return render(request, "catalogue/category.html", {"category": category, "products": products})
