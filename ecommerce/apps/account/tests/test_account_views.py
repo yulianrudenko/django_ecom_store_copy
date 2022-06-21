@@ -23,11 +23,13 @@ def test_account_edit_response(client, customer):
 
 @pytest.mark.django_db
 def test_account_edit_post(client, customer_factory):
-    customer = customer_factory.create()
-    user_login(client, customer)
+    user = customer_factory.create()
+    client.force_login(user)
     url = reverse("account:account_edit")
     response = client.post(url, data={"name": "asss"})
+    user.refresh_from_db()
     assert response.status_code == 200
+    assert user.name == "asss"
 
 
 def test_account_delete(client, customer):
