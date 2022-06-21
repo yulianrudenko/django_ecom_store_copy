@@ -91,7 +91,7 @@ class UserEditForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["email"].required = True
+        self.fields["email"].required = False
         self.fields["email"].widget.attrs["readonly"] = True
         self.fields["name"].required = True
 

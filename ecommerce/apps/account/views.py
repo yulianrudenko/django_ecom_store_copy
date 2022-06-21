@@ -144,7 +144,6 @@ def set_default_address(request, id):
 def wishlist(request):
     wishlist_products = Product.objects.filter(users_wishlist__id=request.user.id)
     context = {"wishlist": wishlist_products}
-    print(request.META["HTTP_REFERER"])
     return render(request, "account/user/wishlist.html", context)
 
 
