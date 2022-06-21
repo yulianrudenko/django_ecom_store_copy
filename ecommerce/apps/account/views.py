@@ -1,5 +1,3 @@
-# from order.models import Order
-# from order.views import get_user_orders
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
@@ -10,6 +8,7 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from ecommerce.apps.catalogue.models import Product
+from ecommerce.apps.order.views import get_user_orders
 
 from .forms import RegistrationForm, UserAddressForm, UserEditForm
 from .models import Address, Customer
@@ -44,7 +43,7 @@ def account_delete(request):
 
 def account_register(request):
     if request.user.is_authenticated:
-        return redirect("/")
+        return redirect("account:dashboard")
 
     if request.method == "POST":
         register_form = RegistrationForm(request.POST)
@@ -163,6 +162,6 @@ def wishlist_add(request, product_id):
 
 @login_required
 def user_orders(request):
-    orders = Order.objects.all().filter(user_id=request.user.id).filter(billing_status=True)
+    orders = get_user_orders(request.user.id)
     context = {"orders": orders}
     return render(request, "account/user/orders.html", context)

@@ -9,16 +9,7 @@ from .models import Address, Customer
 
 
 class RegistrationForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field in self.fields:
-            self.fields[field].widget.attrs["class"] = "form-control"
-        self.fields["user_name"].widget.attrs["placeholder"] = "Username"
-        self.fields["email"].widget.attrs.update({"placeholder": "E-mail", "id": "id_email"})
-        self.fields["password"].widget.attrs["placeholder"] = "Password"
-        self.fields["password2"].widget.attrs["placeholder"] = "Repeat password"
-
-    user_name = forms.CharField(label="Enter username", min_length=4, max_length=50, help_text="Required")
+    name = forms.CharField(label="Enter name", min_length=4, max_length=50, help_text="Required")
     email = forms.EmailField(
         label="Enter email",
         max_length=100,
@@ -28,18 +19,21 @@ class RegistrationForm(forms.ModelForm):
     password = forms.CharField(label="Password", widget=forms.PasswordInput)
     password2 = forms.CharField(label="Confirm Password", widget=forms.PasswordInput)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs["class"] = "form-control"
+        self.fields["name"].widget.attrs["placeholder"] = "Name"
+        self.fields["email"].widget.attrs.update({"placeholder": "E-mail", "id": "id_email"})
+        self.fields["password"].widget.attrs["placeholder"] = "Password"
+        self.fields["password2"].widget.attrs["placeholder"] = "Repeat password"
+
     class Meta:
         model = Customer
         fields = (
-            "user_name",
+            "name",
             "email",
         )
-
-    def clean_username(self):
-        user_name = self.cleaned_data["user_name"].lower()
-        if Customer.objects.all().filter(user_name=user_name).exists():
-            raise forms.ValidationError("User with given username already exists.")
-        return user_name
 
     def clean_password2(self):
         if self.cleaned_data["password"] != self.cleaned_data["password2"]:
@@ -52,14 +46,20 @@ class RegistrationForm(forms.ModelForm):
             raise forms.ValidationError("User with given email already exists.")
         return email
 
+    # def clean_username(self):
+    #     user_name = self.cleaned_data["user_name"].lower()
+    #     if Customer.objects.all().filter(user_name=user_name).exists():
+    #         raise forms.ValidationError("User with given username already exists.")
+    #     return user_name
+
 
 class UserLoginForm(AuthenticationForm):
     username = forms.CharField(
         widget=forms.TextInput(
             attrs={
                 "class": "form-control",
-                "placceholder": "Username",
-                "id": "login-username",
+                "placceholder": "Email",
+                "id": "login-email",
             }
         )
     )
@@ -75,11 +75,6 @@ class UserLoginForm(AuthenticationForm):
 
 
 class UserEditForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["email"].required = True
-        self.fields["name"].required = True
-
     email = forms.EmailField(
         label="Email (can not be changed)",
         max_length=200,
@@ -89,10 +84,22 @@ class UserEditForm(forms.ModelForm):
     )
     name = forms.CharField(
         label="Name",
-        min_length=3,
+        min_length=4,
         max_length=60,
         widget=forms.TextInput(attrs={"class": "form-control mb-3", "placeholder": "Name", "id": "form-name"}),
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["email"].required = True
+        self.fields["email"].widget.attrs["readonly"] = True
+        self.fields["name"].required = True
+
+    def clean_email(self):
+        email = self.cleaned_data["email"]
+        if Customer.objects.all().filter(email=email).exists():
+            raise forms.ValidationError("User with given email already exists.")
+        return email
 
     class Meta:
         model = Customer
@@ -109,7 +116,7 @@ class MyPasswordResetForm(PasswordResetForm):
         email = self.cleaned_data["email"]
         user = Customer.objects.all().filter(email=email)
         if not user:
-            raise forms.ValidationError("No user with given email.")
+            raise forms.ValidationError("User with given email does not exist.")
         return email
 
 

@@ -5,16 +5,26 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
+from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
+from django.core.validators import validate_email
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
 class CustomAccountManager(BaseUserManager):
+    def validate_email_(self, email):
+        try:
+            validate_email(email)
+        except ValidationError:
+            raise ValueError(_("You must provide a valid email"))
+
     def create_user(self, email, name, password, **other_fields):
-        if not email:
+        if email:
+            email = self.normalize_email(email)
+            self.validate_email_(email)
+        else:
             raise ValueError(_("You must provide an email"))
-        email = self.normalize_email(email)
         user = self.model(email=email, name=name, **other_fields)
         user.set_password(password)
         user.save()
@@ -80,7 +90,7 @@ class Address(models.Model):
     address_line = models.CharField(_("Address Line 1"), max_length=255)
     address_line2 = models.CharField(_("Address Line 2"), max_length=255, blank=True, null=True)
     town_city = models.CharField(_("Town/City/State"), max_length=150)
-    delivery_instructions = models.CharField(_("Delivery Instructions"), max_length=255)
+    delivery_instructions = models.CharField(_("Delivery Instructions"), max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(_("Created at"), auto_now_add=True)
     updated_at = models.DateTimeField(_("Updated at"), auto_now=True)
     is_default = models.BooleanField(_("Default"), default=False)
@@ -90,4 +100,4 @@ class Address(models.Model):
         verbose_name_plural = "Addresses"
 
     def __str__(self):
-        return f"{self.town_city}, {self.address_line[:20]}"
+        return f"{self.full_name[:25]}"
